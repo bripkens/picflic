@@ -1,0 +1,2 @@
+{:input "resources/dummy-pics"
+ :output "target/test-output"}
