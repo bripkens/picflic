@@ -2,25 +2,23 @@
   (:require [clojure.java.io :as io]
             [clojure.math.numeric-tower :as math])
   (:import (javax.imageio ImageIO)
+           (java.util UUID)
            (com.mortennobel.imagescaling ResampleOp)))
 
 (def image-types ["png" "jpeg" "jpg" "bmp"])
 
-(def supported-screen-sizes [{:name "WQHD"
-                              :width 2560
+(def supported-screen-sizes [{:width 2560
                               :height 1440}
-                             {:name "FHD"
-                              :width 1920
+                             {:width 1920
                               :height 1080}
-                             {:name "HD"
-                              :width 1366
+                             {:width 1366
                               :height 768}
-                             {:name "WXGA"
-                              :width 1280
+                             {:width 1280
                               :height 800}
-                             {:name "XGA"
-                              :width 1024
+                             {:width 1024
                               :height 768}])
+
+(defn- uuid [] (str (UUID/randomUUID)))
 
 (defn- is-image?
   "Verifies whether the given java.io.File is a readable image"
@@ -41,7 +39,8 @@
   (let [buffered-image (ImageIO/read f)
         width (.getWidth buffered-image)
         height (.getHeight buffered-image)]
-    {:name (second (re-matches #"^(.*)\.[a-zA-Z]+$" (.getName f)))
+    {:id (uuid)
+     :name (second (re-matches #"^(.*)\.[a-zA-Z]+$" (.getName f)))
      :path (.getAbsolutePath f)
      :width width
      :height height

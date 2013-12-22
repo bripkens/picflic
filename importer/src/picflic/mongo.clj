@@ -7,5 +7,5 @@
 
 (mg/set-db! (mg/get-db "monger-test"))
 
-(defn save-image [image]
-  (mgc/insert "images" (assoc image :_id (ObjectId.))))
+(defn save-collection [collection]
+  (mgc/insert "collections" (assoc collection :_id (ObjectId.))))
