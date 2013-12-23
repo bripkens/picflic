@@ -1,10 +1,11 @@
 (ns api.handler
   (:require [cheshire.core :refer [generate-string parse-string]]
-            [compojure.core :refer [defroutes ANY]]
+            [compojure.core :refer [defroutes ANY GET]]
             [compojure.route :as route]
             [liberator.core :refer [resource defresource]]
             [liberator.dev :refer [wrap-trace]]
             [ring.middleware.params :refer [wrap-params]]
+            [ring.util.response :as response]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [api.mongo :as mongo]
@@ -59,10 +60,10 @@
   (ANY "/collections" [] collection-list)
   (ANY "/collections/:id" [id] (collection-entries id))
   (ANY "/images/:id" [id] (image-entries id))
+  (GET "/" [] (response/redirect "/api/index.html"))
   (route/resources "/"))
 
 
 (def handler
   (-> app
-      (wrap-params)
-      (wrap-trace ::header :ui)))
+      (wrap-params)))
