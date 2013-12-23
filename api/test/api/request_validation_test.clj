@@ -18,3 +18,26 @@
 (deftest test-too-many-properties
   (let [data {:name "foo" :bla false}]
     (is (not (:success (validate "collection" (generate-string data)))))))
+
+(deftest test-check-content-type
+  (let [req (fn [method content-type]
+              {:request {:request-method method
+               :headers {"content-type" content-type}}})
+        unsupported (fn [result] (not (true? result)))
+        supported #(not (seq? %))
+        json "application/json"
+        xml "application/xml"]
+    ; should ignore get, delete and patch
+    (is (supported (check-content-type (req :get xml) [json])))
+    (is (supported (check-content-type (req :delete xml) [json])))
+    (is (supported (check-content-type (req :patch xml) [json])))
+    
+    ; wrong content type
+    (is (unsupported (check-content-type (req :put xml) [json])))
+    (is (unsupported (check-content-type (req :post xml) [json])))
+    
+    ; correct content type
+    (is (supported (check-content-type (req :put json) [json])))
+    (is (supported (check-content-type (req :post json) [json])))
+    (is (supported (check-content-type (req :put xml) [json xml])))
+    (is (supported (check-content-type (req :post xml) [json xml])))))
