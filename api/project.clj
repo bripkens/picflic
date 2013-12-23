@@ -4,6 +4,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [compojure "1.1.6"]
                  [liberator "0.10.0"]
+                 [com.github.fge/json-schema-validator "2.1.7"]
                  [cheshire "5.3.0"]
                  [com.novemberain/monger "1.5.0"]]
   :plugins [[lein-ring "0.8.8"]]

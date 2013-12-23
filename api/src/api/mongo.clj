@@ -7,6 +7,9 @@
 
 (mg/set-db! (mg/get-db "monger-test"))
 
+(defn add-collection [collection]
+  (mgc/insert "collections" (assoc collection :_id (ObjectId.))))
+
 (defn get-collections []
   (map #(dissoc % :_id) (mgc/find-maps "collections")))
 
