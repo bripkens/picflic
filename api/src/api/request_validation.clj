@@ -53,14 +53,11 @@
 (defn- get-schema [schema-name]
   (slurp (io/resource (str "public/api/schema/" schema-name ".json"))))
 
-(defn- to-result [report]
-  {:success (.isSuccess report)
-   :message (str report)})
-
 (defn validate [schema-name data]
   (let [parsed-schema (parse-to-tree (get-schema schema-name))
         schema (-> json-schema-factory (.getJsonSchema parsed-schema))
         parsed-data (parse-to-tree data)
         report (.validate schema parsed-data)]
-    (to-result report)))
+    {:success (.isSuccess report)
+     :message (str report)}))
 
