@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "type": "object",
+  "title": "collection",
+  "description": "Detailed collection representation",
+  "properties": {
+    "name": { "id": "string" },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "image"
+      }
+    }
+  }
+}

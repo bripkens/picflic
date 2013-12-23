@@ -1,13 +1,34 @@
 #%RAML 0.8
+---
 
 title: Picflic API
 baseUri: http://localhost:3000
-version: 0.1.0-SNAPSHOT
+version: 1
+
+schemas: !include schema.raml
+documentation: !include documentation.raml
+
 /collections:
   get:
+    description: |
+      This method retrieves *all* collections that are visible to the user.
+    responses:
+      200:
+        body:
+          application/json:
+            schema: collections
   /{id}:
     get:
+      responses:
+        200:
+          body:
+            application/json:
+              schema: collection
 
-/images:
-  /{id}:
-    get:
+/images/{id}:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            schema: image
