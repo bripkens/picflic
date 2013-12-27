@@ -1,7 +1,7 @@
 (ns api.request-validation-test
   (:require [cheshire.core :refer [generate-string]])
   (:use clojure.test
-        ring.mock.request  
+        ring.mock.request
         api.request-validation))
 
 (deftest test-basic-validation
@@ -31,11 +31,11 @@
     (is (supported (check-content-type (req :get xml) [json])))
     (is (supported (check-content-type (req :delete xml) [json])))
     (is (supported (check-content-type (req :patch xml) [json])))
-    
+
     ; wrong content type
     (is (unsupported (check-content-type (req :put xml) [json])))
     (is (unsupported (check-content-type (req :post xml) [json])))
-    
+
     ; correct content type
     (is (supported (check-content-type (req :put json) [json])))
     (is (supported (check-content-type (req :post json) [json])))

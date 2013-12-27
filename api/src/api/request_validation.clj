@@ -7,7 +7,13 @@
            [com.github.fge.jsonschema.load.uri URITransformer]))
 
 
-(def ^:private json-schema-factory
+(def
+  ^{:private true
+    :doc "An immutable and therefore thread-safe JSON schema factory.
+         You can call (.getJsonSchema json-schema-factory <json-schema-node>)
+         to retrieve a JsonSchema instance which can validate JSON.
+         This is a constant as the construction is expensive."}
+  json-schema-factory
   (let [transformer (-> (URITransformer/newBuilder)
                         (.setNamespace "resource:/public/api/schema/")
                         .freeze)
@@ -19,18 +25,38 @@
                     .freeze)]
     factory))
 
-(def ^:private object-mapper (ObjectMapper.))
 
-(defn- parse-to-tree [data] (-> object-mapper .reader (.readTree data)))
+(def
+  ^{:private true
+    :doc "Initialize the object mapper first and keep it private as not all
+         of its methods are thread-safe. Optionally configure it here.
+         Reader instances are cheap to create."}
+  object-reader
+  (let [object-mapper (ObjectMapper.)]
+    (fn [] (.reader object-mapper))))
 
-(defn- get-schema [schema-name]
+
+(defn- parse-to-node
+  "Parse the given String as JSON. Returns a Jackson JsonNode."
+  [data] (-> (object-reader) (.readTree data)))
+
+
+(defn- get-schema
+  "Get the schema file's contents in form of a string. Function only expects
+  the schema name, i.e. 'collection' or 'image'."
+  [schema-name]
   (slurp (io/resource (str "public/api/schema/" schema-name ".json"))))
 
 
-(defn validate [schema-name data]
-  (let [parsed-schema (parse-to-tree (get-schema schema-name))
+(defn validate
+  "Validates the given 'data' against the JSON schema. Returns an object
+  with an :success property that equals true when the schema could
+  successfully be validated. It additionally contains a :message property
+  with a human readable error description."
+  [schema-name data]
+  (let [parsed-schema (parse-to-node (get-schema schema-name))
         schema (-> json-schema-factory (.getJsonSchema parsed-schema))
-        parsed-data (parse-to-tree data)
+        parsed-data (parse-to-node data)
         report (.validate schema parsed-data)]
     {:success (.isSuccess report)
      :message (str report)}))
