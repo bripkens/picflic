@@ -4,7 +4,7 @@
   "title": "image",
   "description": "Detailed image representation",
   "properties": {
-    "id": { "type": "string" },
+    "_id": { "type": "string" },
     "name": { "type": "string" }
   },
   "required": ["name"],

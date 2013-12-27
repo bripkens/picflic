@@ -7,14 +7,20 @@
 
 (mg/set-db! (mg/get-db "monger-test"))
 
-(defn add-collection [collection]
-  (mgc/insert "collections" (assoc collection :_id (ObjectId.))))
 
-(defn get-collections []
-  (map #(dissoc % :_id) (mgc/find-maps "collections")))
+(defn add-collection [collection]
+  (let [id (ObjectId.)]
+    (mgc/insert "collections" (assoc collection :_id id))
+    (str id)))
+
 
 (defn get-collection [id]
-  (dissoc (mgc/find-one-as-map "collections" {:id id}) :_id))
+  (println id)
+  (mgc/find-map-by-id "collections" (ObjectId. id)))
+
+
+(defn get-collections []
+  (mgc/find-maps "collections"))
 
 (defn get-image [id]
   (first (filter #(= (:id %) id)

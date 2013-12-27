@@ -71,13 +71,13 @@
       (slurp (io/reader body)))))
 
 
-(defn parse-request [ctx schema-name]
+(defn parse-request [ctx schema-name key]
   (when (#{:put :post} (get-in ctx [:request :request-method]))
     (try
       (if-let [body (body-as-string ctx)]
         (let [validation-report (validate schema-name body)]
           (if (:success validation-report)
-            [false {::data (parse-string body)}]
+            [false {key (parse-string body)}]
             {:message (:message validation-report)}))
         {:message "No body"})
       (catch Exception e

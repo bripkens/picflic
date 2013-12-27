@@ -17,6 +17,18 @@ documentation: !include documentation/index.raml
         body:
           application/json:
             schema: collection
+  post:
+    description: |
+      Add a new collection
+    body:
+      application/json:
+        schema: collection-command
+    responses:
+      200:
+        body:
+          application/json:
+            schema: collection
+
   /{id}:
     get:
       responses:
