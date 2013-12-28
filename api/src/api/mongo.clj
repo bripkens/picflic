@@ -46,7 +46,8 @@
         new-collection (assoc collection
                          :images
                          (conj (:images collection) image))]
-    (mgc/update-by-id "collections" (:_id collection) new-collection)))
+    (mgc/update-by-id "collections" (:_id collection) new-collection)
+    image))
 
 
 (defn get-image [collection-id image-id]

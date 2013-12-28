@@ -69,9 +69,12 @@
                  file (io/file (images/image-path id))]
              (with-open [out (io/output-stream file)]
                (io/copy body out))
-             (mongo/save-image collection-id id (images/analyze id))
-             (println "Scaling images in a separate thread")
-             {::id id}))
+             (let [result (mongo/save-image collection-id
+                                            id
+                                            (images/analyze id))]
+               (println "Scaling images in a separate thread")
+               (images/scale-async result)
+               {::id id})))
   :handle-created #(mongo/get-image collection-id (::id %))
   :location #(build-entry-url (get % :request) (get % ::id)))
 

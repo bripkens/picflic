@@ -20,9 +20,15 @@
     :height 768}])
 
 
-(defn image-path [id]
-  (format "%s/%s.jpg" (:image-directory config) id))
-
+(defn image-path
+  ([id]
+   (format "%s/%s.jpg" (:image-directory config) id))
+  ([id resolution]
+   (format "%s/%s_%sx%s.jpg"
+           (:image-directory config)
+           id
+           (:width resolution)
+           (:height resolution))))
 
 
 (defn get-target-resolutions [width aspect-ratio]
@@ -51,3 +57,18 @@
      :aspect-ratio aspect-ratio
      :resolutions resolutions}))
 
+
+(defn- scale [image resolution]
+  (println "Going to scale image...")
+  (let [buffered-image (ImageIO/read (io/file (image-path (:_id image))))
+        operation (ResampleOp. (:width resolution) (:height resolution))
+        scaled-image (.filter operation buffered-image nil)
+        output (io/file (image-path (:_id image) resolution))]
+    (ImageIO/write scaled-image "jpg" output)
+    (println "Scaled image!")))
+
+
+(defn scale-async [image]
+  (doseq [resolution (:resolutions image)]
+    (let [a (agent false)]
+      (send a (fn [_] (scale image resolution))))))
