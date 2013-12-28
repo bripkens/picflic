@@ -29,7 +29,7 @@ documentation: !include documentation/index.raml
           application/json:
             schema: collection
 
-  /{id}:
+  /{collectionId}:
     get:
       responses:
         200:
@@ -37,10 +37,23 @@ documentation: !include documentation/index.raml
             application/json:
               schema: collection
 
-/images/{id}:
-  get:
-    responses:
-      200:
+    /images:
+      post:
+        description: |
+          Upload a new image
         body:
-          application/json:
-            schema: image
+          image/jpeg:
+        responses:
+          200:
+            body:
+              application/json:
+                schema: image
+
+      /{imageId}:
+        get:
+          responses:
+            200:
+              body:
+                application/json:
+                  schema: image
+                image/jpeg:

@@ -6,13 +6,13 @@
             [liberator.dev :refer [wrap-trace]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.util.response :as response]
-            [clojure.edn :as edn]
             [clojure.java.io :as io]
             [api.mongo :as mongo]
+            [api.util :refer [config]]
+            [api.image-handler :as images]
             [api.request-validation :refer [parse-request check-content-type]])
   (:import [java.net URL]))
 
-(def config (edn/read-string (slurp "config.edn")))
 
 
 (defn- build-entry-url [request id]
@@ -52,27 +52,51 @@
   :handle-ok ::entry)
 
 
-(defn- construct-image-path [image]
-  (str (:image-directory config)
-       "/"
-       (:name image)
-       ".jpg"))
+
+; Test
+; curl -X POST \
+;      -v \
+;      --header "Content-Type: image/jpeg" \
+;      --data-binary @/Users/ben/projects/picflic/importer/resources/dummy-pics/Beetime.jpg \
+;      http://localhost:3000/images
+(defresource image-list [collection-id]
+  :allowed-methods [:post]
+  :available-media-types ["application/json"]
+  :malformed? [false]
+  :known-content-type? #(check-content-type % ["image/jpeg"])
+  :post! (fn [{{body :body} :request}]
+           (let [id (mongo/get-next-image-id)
+                 file (io/file (images/image-path id))]
+             (with-open [out (io/output-stream file)]
+               (io/copy body out))
+             (mongo/save-image collection-id id (images/analyze id))
+             (println "Scaling images in a separate thread")
+             {::id id}))
+  :handle-created #(mongo/get-image collection-id (::id %))
+  :location #(build-entry-url (get % :request) (get % ::id)))
 
 
-(defresource image-entries [id]
-  :available-media-types ["image/jpeg"]
+(defresource image-entries [collection-id image-id]
+  :allowed-methods [:get :post]
+  :available-media-types ["image/jpeg" "application/json"]
   :exists? (fn [_]
-             (let [e (mongo/get-image id)]
+             (let [e (mongo/get-image collection-id image-id)]
                (if-not (nil? e)
                  {::entry e})))
-  :handle-ok (fn [ctx] (io/file (construct-image-path (::entry ctx)))))
+  :handle-ok (fn [{image ::entry {media-type :media-type} :representation}]
+               (case media-type
+                 "image/jpeg" (io/file (images/image-path (:_id image)))
+                 "application/json" image)))
 
 
 (defroutes app
   (ANY "/config" [] configuration)
   (ANY "/collections" [] collection-list)
   (ANY "/collections/:id" [id] (collection-entries id))
-  (ANY "/images/:id" [id] (image-entries id))
+  (ANY "/collections/:collection-id/images" [collection-id]
+       (image-list collection-id))
+  (ANY "/collections/:collection-id/images/:image-id" [collection-id image-id]
+       (image-entries collection-id image-id))
   (GET "/" [] (response/redirect "/api/index.html"))
   (route/resources "/"))
 

@@ -1,2 +1,2 @@
-{:image-directory "../importer/target/test-output"
+{:image-directory "target/test-output"
  }
