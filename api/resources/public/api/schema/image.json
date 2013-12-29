@@ -6,11 +6,24 @@
   "properties": {
     "_id": { "type": "string" },
     "name": { "type": "string" },
+    "width": { "type": "integer" },
+    "height": { "type": "integer" },
+    "width": { "type": "integer" },
+    "aspect-ratio": { "type": "number" },
     "modified": {
       "type": "string",
       "description": "ISO 8601 Date Time String"
+    },
+    "resolutions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "width": { "type": "integer" },
+          "height": { "type": "integer" }
+        }
+      }
     }
   },
-  "required": ["_id"],
   "additionalProperties": false
 }

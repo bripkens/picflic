@@ -1,7 +1,9 @@
 (ns api.image-handler
   (:require [api.util :refer [config]]
+            [api.concurrency :refer [agent-executor]]
             [clojure.java.io :as io]
-            [clojure.math.numeric-tower :as math])
+            [clojure.math.numeric-tower :as math]
+            [clojure.tools.logging :as logging])
   (:import (javax.imageio ImageIO)
            (com.mortennobel.imagescaling ResampleOp)))
 
@@ -31,7 +33,7 @@
            (:height resolution))))
 
 
-(defn get-target-resolutions [width aspect-ratio]
+(defn- get-target-resolutions [width aspect-ratio]
   (reduce
     (fn [target-resolutions resolution]
       (if (<= (:width resolution) width)
@@ -50,25 +52,28 @@
         buffered-image (ImageIO/read file)
         width (.getWidth buffered-image)
         height (.getHeight buffered-image)
-        aspect-ratio (/ width height)
-        resolutions (get-target-resolutions width aspect-ratio)]
+        resolutions (get-target-resolutions width (/ width height))]
     {:width width
      :height height
-     :aspect-ratio aspect-ratio
      :resolutions resolutions}))
 
 
-(defn- scale [image resolution]
-  (println "Going to scale image...")
+(defn- scale [image {width :width height :height :as resolution}]
+  (logging/debug "Scaling image" (str (:_id image)) "to" width "x" height)
   (let [buffered-image (ImageIO/read (io/file (image-path (:_id image))))
-        operation (ResampleOp. (:width resolution) (:height resolution))
+        operation (ResampleOp. width height)
         scaled-image (.filter operation buffered-image nil)
         output (io/file (image-path (:_id image) resolution))]
     (ImageIO/write scaled-image "jpg" output)
-    (println "Scaled image!")))
+    (logging/debug "Successfully scaled image"
+                   (str (:_id image))
+                   "to"
+                   width
+                   "x"
+                   height)))
 
 
 (defn scale-async [image]
   (doseq [resolution (:resolutions image)]
     (let [a (agent false)]
-      (send a (fn [_] (scale image resolution))))))
+      (send-via agent-executor a (fn [_] (scale image resolution))))))

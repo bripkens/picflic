@@ -8,6 +8,8 @@
                  [cheshire "5.3.0"]
                  [com.novemberain/monger "1.5.0"]
                  [clj-time "0.6.0"]
+                 [org.clojure/tools.logging "0.2.6"]
+                 [log4j/log4j "1.2.17"]
                  [org.clojure/math.numeric-tower "0.0.2"]
                  [com.mortennobel/java-image-scaling "0.8.5"]]
   :plugins [[lein-ring "0.8.8"]]

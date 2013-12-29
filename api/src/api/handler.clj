@@ -72,7 +72,6 @@
              (let [result (mongo/save-image collection-id
                                             id
                                             (images/analyze id))]
-               (println "Scaling images in a separate thread")
                (images/scale-async result)
                {::id id})))
   :handle-created #(mongo/get-image collection-id (::id %))
