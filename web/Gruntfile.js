@@ -5,7 +5,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     meta: {
       'transpiledDir': 'target/transpiled',
-      'transpiledJs': ['<%=meta.transpiledDir%>/**/*.amd.js'],
+      'transpiledJs': ['<%=meta.transpiledDir%>/**/*.js'],
       'dependencies': ['vendor/amdloader/loader.js',
         'vendor/react/react.js',
         'vendor/es6-promises/promise.js',
@@ -37,6 +37,14 @@ module.exports = function(grunt) {
       releaseJs: {
         src: ['target/app.min.js'],
         dest: 'app.js'
+      },
+
+      es6Sources: {
+        expand: true,
+        cwd: 'js',
+        src: ['**/*.js'],
+        dest: 'target/es6-sources',
+        ext: '.js'
       }
     },
 
@@ -55,15 +63,25 @@ module.exports = function(grunt) {
       }
     },
 
+    react: {
+      files: {
+        expand: true,
+        cwd: 'js',
+        src: ['**/*.jsx'],
+        dest: 'target/es6-sources',
+        ext: '.js'
+      }
+    },
+
     transpile: {
       main: {
         type: 'amd', // or "amd" or "yui"
         files: [{
           expand: true,
-          cwd: 'js',
+          cwd: 'target/es6-sources',
           src: ['**/*.js'],
-          dest: '<%= meta.transpiledDir %>',
-          ext: '.amd.js'
+          dest: 'target/transpiled',
+          ext: '.js'
         }]
       }
     },
@@ -80,13 +98,19 @@ module.exports = function(grunt) {
     'grunt-contrib-clean',
     'grunt-contrib-concat',
     'grunt-contrib-copy',
+    'grunt-react',
     'grunt-contrib-uglify',
     'grunt-contrib-watch',
     'grunt-es6-module-transpiler'
   ].forEach(grunt.loadNpmTasks.bind(grunt));
 
 
-  grunt.registerTask('compile', ['transpile', 'concat']);
+  grunt.registerTask('compile', [
+    'react',
+    'copy:es6Sources',
+    'transpile',
+    'concat'
+  ]);
   grunt.registerTask('dev', ['clean',
     'compile',
     'copy:devJs',
