@@ -15,7 +15,6 @@
   ],
   "dependencies": {
     "react": "~0.8.0",
-    "mori": "~0.2.4",
-    "amdloader": "https://github.com/thomasboyt/grunt-microlib.git"
+    "mori": "~0.2.4"
   }
 }

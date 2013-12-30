@@ -6,10 +6,14 @@ module.exports = function(grunt) {
     meta: {
       'transpiledDir': 'target/transpiled',
       'transpiledJs': ['<%=meta.transpiledDir%>/**/*.amd.js'],
-      'dependencies': ['vendor/amdloader/assets/loader.js',
-        'vendor/react/react.js'],
-      'dependenciesMinified': ['vendor/amdloader/assets/loader.js',
-        'vendor/react/react.min.js']
+      'dependencies': ['vendor/amdloader/loader.js',
+        'vendor/react/react.js',
+        'vendor/es6-promises/promise.js',
+        'vendor/mori/mori.min.js'],
+      'dependenciesMinified': ['vendor/amdloader/loader.js',
+        'vendor/react/react.min.js',
+        'vendor/es6-promises/promise.min.js',
+        'vendor/mori/mori.min.js']
     },
 
     clean: ['target/', 'app.js'],
@@ -62,7 +66,14 @@ module.exports = function(grunt) {
           ext: '.amd.js'
         }]
       }
-    }
+    },
+
+    watch: {
+      js: {
+        files: 'js/**/*.js',
+        tasks: ['compile', 'copy:devJs']
+      },
+    },
   });
 
   [
@@ -70,6 +81,7 @@ module.exports = function(grunt) {
     'grunt-contrib-concat',
     'grunt-contrib-copy',
     'grunt-contrib-uglify',
+    'grunt-contrib-watch',
     'grunt-es6-module-transpiler'
   ].forEach(grunt.loadNpmTasks.bind(grunt));
 
@@ -78,6 +90,7 @@ module.exports = function(grunt) {
   grunt.registerTask('dev', ['clean',
     'compile',
     'copy:devJs',
+    'watch'
   ]);
   grunt.registerTask('release', ['clean',
     'compile',

@@ -3,7 +3,7 @@ var Picflic = React.createClass({
     return (
       React.DOM.div({
         className: 'commentBox',
-        children: 'Hello, world! I am a CommentBox.'
+        children: 'Welcome to Picflic!!'
       })
     );
   }
