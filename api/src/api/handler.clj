@@ -14,7 +14,6 @@
   (:import [java.net URL]))
 
 
-
 (defn- build-entry-url [request id]
   (URL. (format "%s://%s:%s%s/%s"
                 (name (:scheme request))
@@ -52,13 +51,6 @@
   :handle-ok ::entry)
 
 
-
-; Test
-; curl -X POST \
-;      -v \
-;      --header "Content-Type: image/jpeg" \
-;      --data-binary @/Users/ben/projects/picflic/importer/resources/dummy-pics/Beetime.jpg \
-;      http://localhost:3000/images
 (defresource image-list [collection-id]
   :allowed-methods [:post]
   :available-media-types ["application/json"]
