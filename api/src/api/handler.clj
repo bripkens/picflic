@@ -95,6 +95,17 @@
   (route/resources "/"))
 
 
+(defn wrap-cors
+  "Allow requests from all origins"
+  [handler]
+  (fn [request]
+    (let [response (handler request)]
+      (update-in response
+                 [:headers "Access-Control-Allow-Origin"]
+                 (fn [_] "*")))))
+
+
 (def handler
   (-> app
-      (wrap-params)))
+      (wrap-params)
+      (wrap-cors)))
