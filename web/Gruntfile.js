@@ -88,7 +88,7 @@ module.exports = function(grunt) {
 
     watch: {
       js: {
-        files: 'js/**/*.js',
+        files: 'js/**/*',
         tasks: ['compile', 'copy:devJs']
       },
     },
