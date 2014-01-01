@@ -19,7 +19,9 @@
    {:width 1280
     :height 800}
    {:width 1024
-    :height 768}])
+    :height 768}
+   {:width 290
+    :height 400}])
 
 
 (defn image-path

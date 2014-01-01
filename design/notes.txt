@@ -1,0 +1,6 @@
+ - red line which fills up to indicate when the next image is going to appear
+   as on http://themes.doitmax.de/?theme=Invictus
+ - image grid as seen on
+   (titel and description excerpt underneath image)
+   http://themeforest.net/item/photolux-photography-portfolio-wordpress-theme/full_screen_preview/894193
+ -

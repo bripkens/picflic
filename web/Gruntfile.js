@@ -73,6 +73,19 @@ module.exports = function(grunt) {
       }
     },
 
+    sass: {
+      dev: {
+        options: {
+          style: 'expanded',
+          debugInfo: true,
+          lineNumbers: true
+        },
+        files: {
+          'app.css': 'scss/app.scss'
+        }
+      }
+    },
+
     transpile: {
       main: {
         type: 'amd', // or "amd" or "yui"
@@ -91,6 +104,10 @@ module.exports = function(grunt) {
         files: 'js/**/*',
         tasks: ['compile', 'copy:devJs']
       },
+      css: {
+        files: 'scss/**/*',
+        tasks: ['sass:dev']
+      }
     },
   });
 
@@ -98,10 +115,11 @@ module.exports = function(grunt) {
     'grunt-contrib-clean',
     'grunt-contrib-concat',
     'grunt-contrib-copy',
-    'grunt-react',
+    'grunt-contrib-sass',
     'grunt-contrib-uglify',
     'grunt-contrib-watch',
-    'grunt-es6-module-transpiler'
+    'grunt-es6-module-transpiler',
+    'grunt-react'
   ].forEach(grunt.loadNpmTasks.bind(grunt));
 
 
@@ -114,6 +132,7 @@ module.exports = function(grunt) {
   grunt.registerTask('dev', ['clean',
     'compile',
     'copy:devJs',
+    'sass:dev',
     'watch'
   ]);
   grunt.registerTask('release', ['clean',

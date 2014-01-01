@@ -14,6 +14,7 @@
                  [com.mortennobel/java-image-scaling "0.8.5"]]
   :plugins [[lein-ring "0.8.8"]]
   :ring {:handler api.handler/handler}
+  :jvm-opts ["-Xmx1g" "-server"]
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring-mock "0.1.5"]]}})

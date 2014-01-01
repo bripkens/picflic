@@ -5,6 +5,7 @@
 import mori from "mori";
 
 import CollectionList from "/components/collection-list";
+import CollectionGrid from "/components/collection-grid";
 import service from "/service"
 
 export default React.createClass({
@@ -24,7 +25,14 @@ export default React.createClass({
   render: function() {
     return (
       <div>
-        <CollectionList collections={mori.get(this.state, 'collections')}></CollectionList>
+        <nav>
+          <CollectionList collections={mori.get(this.state, 'collections')}>
+          </CollectionList>
+        </nav>
+        <main>
+          <CollectionGrid collections={mori.get(this.state, 'collections')}>
+          </CollectionGrid>
+        </main>
       </div>
     );
   }
