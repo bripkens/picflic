@@ -77,10 +77,18 @@
              (let [e (mongo/get-image collection-id image-id)]
                (if-not (nil? e)
                  {::entry e})))
-  :handle-ok (fn [{image ::entry {media-type :media-type} :representation}]
+  :handle-ok (fn [{image ::entry {media-type :media-type} :representation
+                   request :request}]
                (case media-type
-                 "image/jpeg" (io/file (images/image-path (:_id image)))
-                 "application/json" image)))
+                 ;
+                 "image/jpeg"
+                   (if-let [width (get-in request [:query-params "width"])]
+                     (if-let [resolution (images/get-resolution image (Integer/parseInt width))]
+                       (io/file (images/image-path (:_id image) resolution))
+                       (io/file (images/image-path (:_id image))))
+                     (io/file (images/image-path (:_id image))))
+                 "application/json"
+                   image)))
 
 
 (defroutes app

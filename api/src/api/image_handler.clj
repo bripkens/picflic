@@ -35,6 +35,12 @@
            (:height resolution))))
 
 
+(defn get-resolution [image width]
+  (let [resolutions (sort-by #(% :width) (image :resolutions))]
+    (if-let [larger (some #(if (>= (% :width) width) %) resolutions)]
+      larger)))
+
+
 (defn- get-target-resolutions [width aspect-ratio]
   (reduce
     (fn [target-resolutions resolution]
