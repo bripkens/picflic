@@ -16,14 +16,41 @@ service.getCollections = function() {
 
 service.getCollectionPreviewImage = function(collection) {
   var images = mori.get(collection, 'images');
-  var image = mori.get(images, 0);
-  return service.getImageUrl(mori.get(collection, '_id'),
-    mori.get(image, '_id'));
+  return mori.get(images, 0);
 };
 
 
 service.getImageUrl = function(collectionId, imageId) {
   return baseUrl + '/collections/' + collectionId + '/images/' + imageId;
+};
+
+
+service.getImageResolution = function(image, desiredWidth) {
+  var resolutions = mori.get(image, 'resolutions');
+
+  // try to find a larger version
+  var larger = mori.some(function(resolution) {
+    var width = mori.get(resolution, 'width');
+    if (width >= desiredWidth) {
+      return resolution;
+    }
+  }, resolutions);
+  if (larger) return larger;
+
+  // try to find a smaller version
+  var smaller = mori.some(function(resolution) {
+    var width = mori.get(resolution, 'width');
+    if (width <= desiredWidth) {
+      return resolution;
+    }
+  }, mori.reverse(resolutions));
+  if (smaller) return smaller;
+
+  // if all fails we return the original dimensions
+  return mori.js_to_clj({
+    width: mori.get(image, 'width'),
+    height: mori.get(image, 'height')
+  });
 };
 
 

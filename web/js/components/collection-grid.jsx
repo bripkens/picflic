@@ -9,10 +9,14 @@ import ImageGrid from "/components/image-grid";
  export default React.createClass({
   render: function() {
     var images = mori.map(function(collection) {
+      var preview = service.getCollectionPreviewImage(collection);
       return mori.js_to_clj({
         label: mori.get(collection, 'name'),
         description: mori.get(collection, 'description'),
-        image: service.getCollectionPreviewImage(collection)
+        src: service.getImageUrl(mori.get(collection, '_id'),
+          mori.get(preview, '_id')),
+        image: preview
+
       });
     }, this.props.collections);
 

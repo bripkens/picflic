@@ -1,0 +1,42 @@
+.image-grid {
+  list-style: none;
+  position: relative;
+}
+
+.image-grid__item {
+  width: 290px;
+  margin: .5em;
+
+  position: absolute;
+
+  img {
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+  }
+}
+
+.image-grid__item__description {
+  display: block;
+  background: #161616;
+  text-align: center;
+  padding: 10px;
+
+  h2, h3 {
+    margin: 0;
+  }
+
+  h2 {
+    font-size: 1em;
+    color: #fff;
+    font-weight: normal;
+  }
+
+  h3 {
+    font-size: .8em;
+    text-transform: uppercase;
+    padding: 10px 0 0;
+    color: #b5b5b5;
+    font-weight: 300;
+  }
+}

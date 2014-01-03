@@ -1,5 +1,7 @@
 @import "CSS:../vendor/normalize-css/normalize";
 
-.image-grid {
-  list-style: none;
-}
+
+@import "util";
+@import "base";
+@import "navigation";
+@import "image-grid";

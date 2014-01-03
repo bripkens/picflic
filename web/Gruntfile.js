@@ -9,11 +9,13 @@ module.exports = function(grunt) {
       'dependencies': ['vendor/amdloader/loader.js',
         'vendor/react/react.js',
         'vendor/es6-promises/promise.js',
-        'vendor/mori/mori.min.js'],
+        'vendor/mori/mori.min.js',
+        'vendor/underscore/underscore.js'],
       'dependenciesMinified': ['vendor/amdloader/loader.js',
         'vendor/react/react.min.js',
         'vendor/es6-promises/promise.min.js',
-        'vendor/mori/mori.min.js']
+        'vendor/mori/mori.min.js',
+        'vendor/underscore/underscore-min.js']
     },
 
     clean: ['target/', 'app.js'],
@@ -110,7 +112,7 @@ module.exports = function(grunt) {
         files: 'scss/**/*',
         tasks: ['sass:dev']
       }
-    },
+    }
   });
 
   [
