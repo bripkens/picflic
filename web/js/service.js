@@ -14,6 +14,13 @@ service.getCollections = function() {
   });
 };
 
+service.getCollection = function(id) {
+  return request({url: baseUrl + '/collections/' + id})
+  .then(function(response) {
+    return mori.get(response, 'body');
+  });
+};
+
 service.getCollectionPreviewImage = function(collection) {
   var images = mori.get(collection, 'images');
   return mori.get(images, 0);

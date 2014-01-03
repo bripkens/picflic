@@ -5,6 +5,8 @@ function shim(name, val) {
 }
 shim('mori', mori);
 shim('React', React);
+shim('underscore', _);
+shim('crossroads', crossroads);
 
 
 Promise.prototype.done = function(msg) {

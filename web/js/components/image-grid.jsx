@@ -2,7 +2,8 @@
  * @jsx React.DOM
  */
 
- import service from "/service";
+import service from "/service";
+import _ from "underscore";
 
 var cardWidthPixels = 290;
 var cardMarginPixels = 5;
@@ -10,18 +11,6 @@ var cardMarginPixels = 5;
  export default React.createClass({
   getInitialState: function() {
     return {windowWidth: window.innerWidth};
-  },
-
-  handleResize: _.throttle(function(e) {
-    this.setState({windowWidth: window.innerWidth});
-  }, 1000 /* ms */ / 60 /* fps */),
-
-  componentDidMount: function() {
-    window.addEventListener('resize', this.handleResize);
-  },
-
-  componentWillUnmount: function() {
-    window.removeEventListener('resize', this.handleResize);
   },
 
   render: function() {
@@ -38,15 +27,24 @@ var cardMarginPixels = 5;
         height: height
       };
 
+      var label = mori.get(image, 'label');
+      var description = mori.get(image, 'description');
       return (
         <li className="image-grid__item">
-          <img src={mori.get(image, 'src') + '?width=' + width} style={imgStyle}/>
-          <div className="image-grid__item__description">
-            {image.description ?
-              <h3>{mori.get(image, 'description')}</h3>
-              : null}
-            <h2>{mori.get(image, 'label')}</h2>
-          </div>
+          <a href={mori.get(image, 'link')} target={mori.get(image, 'target') || ''}>
+            <img src={mori.get(image, 'src') + '?width=' + width}
+                 style={imgStyle}/>
+          </a>
+          {label || description ?
+            <div className="image-grid__item__description">
+              {description ?
+                <h3>{mori.get(image, 'description')}</h3>
+                : null}
+              {label ?
+                <h2>{label}</h2>
+                : null}
+            </div>
+            : null}
         </li>
       );
     }, this.props.images);
@@ -58,7 +56,11 @@ var cardMarginPixels = 5;
     );
   },
 
-  componentDidUpdate: function(prevProps, prevState, rootNode) {
+  handleResize: _.throttle(function(e) {
+    this.setState({windowWidth: window.innerWidth});
+  }, 1000 /* ms */ / 60 /* fps */),
+
+  resize: function(rootNode) {
     var availableWidth = rootNode.clientWidth;
     var imageCount = mori.count(this.props.images);
     var cardOuterWidth = cardWidthPixels + cardMarginPixels * 2;
@@ -91,5 +93,18 @@ var cardMarginPixels = 5;
       childNode.style.top = dimension.top;
       childNode.style.left = dimension.left;
     }
+  },
+
+  componentDidMount: function(rootNode) {
+    window.addEventListener('resize', this.handleResize);
+    this.resize(rootNode);
+  },
+
+  componentDidUpdate: function(prevProps, prevState, rootNode) {
+    this.resize(rootNode);
+  },
+
+  componentWillUnmount: function() {
+    window.removeEventListener('resize', this.handleResize);
   }
  });

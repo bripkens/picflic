@@ -10,12 +10,18 @@ module.exports = function(grunt) {
         'vendor/react/react.js',
         'vendor/es6-promises/promise.js',
         'vendor/mori/mori.min.js',
-        'vendor/underscore/underscore.js'],
+        'vendor/underscore/underscore.js',
+        'vendor/js-signals/dist/signals.js',
+        'vendor/hasher/dist/js/hasher.js',
+        'vendor/crossroads/dist/crossroads.js'],
       'dependenciesMinified': ['vendor/amdloader/loader.js',
         'vendor/react/react.min.js',
         'vendor/es6-promises/promise.min.js',
         'vendor/mori/mori.min.js',
-        'vendor/underscore/underscore-min.js']
+        'vendor/underscore/underscore-min.js',
+        'vendor/js-signals/dist/signals.min.js',
+        'vendor/hasher/dist/js/hasher.min.js',
+        'vendor/crossroads/dist/crossroads.min.js']
     },
 
     clean: ['target/', 'app.js'],

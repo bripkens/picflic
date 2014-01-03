@@ -15,8 +15,8 @@ import ImageGrid from "/components/image-grid";
         description: mori.get(collection, 'description'),
         src: service.getImageUrl(mori.get(collection, '_id'),
           mori.get(preview, '_id')),
-        image: preview
-
+        image: preview,
+        link: '#/collections/' + mori.get(collection, '_id')
       });
     }, this.props.collections);
 
