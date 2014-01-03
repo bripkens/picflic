@@ -78,7 +78,9 @@ module.exports = function(grunt) {
         options: {
           style: 'expanded',
           debugInfo: true,
-          lineNumbers: true
+          lineNumbers: true,
+          compass: true,
+          require: ['sass-css-importer']
         },
         files: {
           'app.css': 'scss/app.scss'

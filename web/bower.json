@@ -15,6 +15,6 @@
   ],
   "dependencies": {
     "react": "~0.8.0",
-    "mori": "~0.2.4"
+    "normalize-css": "~2.1.3"
   }
 }
