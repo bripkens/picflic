@@ -51,6 +51,12 @@ documentation: !include documentation/index.raml
 
       /{imageId}:
         get:
+          queryParameters:
+            width:
+              description: |
+                Desired width of the image. The API will try to find a
+                resolution that fits best to your request but cannot make any
+                guarantees.
           responses:
             200:
               body:
