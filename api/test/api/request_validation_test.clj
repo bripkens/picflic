@@ -5,13 +5,14 @@
         api.request-validation))
 
 (deftest test-basic-validation
-  (is (:success (validate "collection" (generate-string {:name "Foobar"})))))
+  (is (:success (validate "collection" (generate-string {:_id "123"})))))
 
 (deftest test-missing-required-properties
   (is (not (:success (validate "collection" (generate-string {}))))))
 
 (deftest test-sub-resource-missing-property
-  (let [data {:name "foo"
+  (let [data {:_id "123"
+              :name "foo"
               :images [{:blub "bla"}]}]
     (is (not (:success (validate "collection" (generate-string data)))))))
 
