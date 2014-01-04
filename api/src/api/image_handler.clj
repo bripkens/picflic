@@ -12,7 +12,8 @@
 (let [dir (:image-directory config)
       file (io/file dir)]
   (if (not (.exists file))
-    (.mkdirs file)))
+    (when-not (.mkdirs file)
+      (throw (RuntimeException. "Could not create image output directory.")))))
 
 
 (defn image-path
