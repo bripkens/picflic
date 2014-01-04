@@ -73,18 +73,29 @@ var cardMarginPixels = 5;
       rowHeight[i] = cardMarginPixels;
     }
 
+    function getSmallestColumn() {
+      return _.range(0, rowHeight.length)
+      .reduce(function(min, current) {
+        if (rowHeight[current] < rowHeight[min]) {
+          return current;
+        }
+        return min;
+      }, 0);
+    }
+
     var childNodes = rootNode.childNodes;
     var dimensions = [];
     for (var i = 0, n = childNodes.length; i < n; i++) {
       var childNode = childNodes[i];
-      var column = i % cardsPerRow;
+      var column = getSmallestColumn();
       var columnWidth = childNode.clientWidth;
       var columnHeight = childNode.clientHeight;
       dimensions.push({
         top: rowHeight[column] + 'px',
         left: cardOuterWidth * column + rowMargin + 'px'
       });
-      rowHeight[column] = rowHeight[column] + columnHeight + cardMarginPixels * 2;
+      rowHeight[column] = rowHeight[column] + columnHeight +
+        cardMarginPixels * 2;
     }
 
     for (var i = 0, n = childNodes.length; i < n; i++) {
@@ -93,6 +104,8 @@ var cardMarginPixels = 5;
       childNode.style.top = dimension.top;
       childNode.style.left = dimension.left;
     }
+
+    rootNode.style.height = _.max(rowHeight) + cardMarginPixels + 'px';
   },
 
   componentDidMount: function(rootNode) {

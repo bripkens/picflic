@@ -12,6 +12,7 @@ shim('crossroads', crossroads);
 Promise.prototype.done = function(msg) {
   msg = msg || 'Unhandled rejected promise:';
   this.then(null, function(err) {
+    alert(JSON.stringify(err));
     if (err instanceof Error) {
       console.error(msg, err.message, err);
     } else {
