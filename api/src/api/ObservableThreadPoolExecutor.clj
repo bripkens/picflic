@@ -6,7 +6,8 @@
     :constructors {[int
                     int
                     long
-                    java.util.concurrent.TimeUnit]
+                    java.util.concurrent.TimeUnit
+                    String]
                    [int
                     int
                     long
@@ -16,10 +17,10 @@
   (:require [clojure.java.jmx :as jmx])
   (:import [java.util.concurrent TimeUnit LinkedBlockingQueue]))
 
-(defn -init [core-pool-size maximum-pool-size keep-alive-time unit]
-  (let [state (ref {:queued 0 :failed 0 :succeeded 0})]
+(defn -init [core-pool-size maximum-pool-size keep-alive-time unit bean-name]
+  (let [state (ref {:queued 0 :running 0 :failed 0 :succeeded 0})]
     (jmx/register-mbean (jmx/create-bean state)
-                    "api.concurrency:name=queue-stats")
+                        (format "api.concurrency:name=%s" bean-name))
     [[core-pool-size
       maximum-pool-size
       keep-alive-time
@@ -27,14 +28,20 @@
       (LinkedBlockingQueue.)]
      state]))
 
-(defn -beforeExecute [this thread runnable]
-  (dosync (alter (.state this) #(assoc % :queued (inc (:queued %))))))
+(defn -beforeExecute [this _ _]
+  (dosync
+    (alter
+      (.state this)
+      #(-> %
+           (assoc :running (inc (:running %)))
+           (assoc :queued (.size (.getQueue this)))))))
 
 (defn -afterExecute [this _ throwable]
   (dosync
     (alter
       (.state this)
       (fn [state]
-        (let [tmp-state (assoc state :queued (dec (:queued state)))
+        (let [tmp-state (assoc state :running (dec (:running state))
+                                     :queued (.size (.getQueue this)))
               key-to-inc (if (nil? throwable) :succeeded :failed)]
           (assoc tmp-state key-to-inc (inc (key-to-inc tmp-state))))))))
