@@ -6,8 +6,9 @@
 .image-grid__item {
   width: 290px;
   margin: .5em;
-
   position: absolute;
+
+  background: #161616;
 
   img {
     max-width: 100%;
@@ -18,7 +19,6 @@
 
 .image-grid__item__description {
   display: block;
-  background: #161616;
   text-align: center;
   padding: 10px;
 

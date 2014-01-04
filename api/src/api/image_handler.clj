@@ -3,8 +3,11 @@
             [api.concurrency :refer [agent-executor]]
             [clojure.java.io :as io]
             [clojure.math.numeric-tower :as math]
-            [clojure.tools.logging :as logging])
+            [clojure.tools.logging :as logging]
+            [clj-time.coerce :as time-coerce])
   (:import (javax.imageio ImageIO)
+           (com.drew.imaging ImageMetadataReader)
+           (com.drew.metadata.exif ExifSubIFDDirectory)
            (com.mortennobel.imagescaling ResampleOp)))
 
 
@@ -47,30 +50,36 @@
     (:image-target-resolutions config)))
 
 
+(defn- read-time-taken [file]
+  (if-let [metadata (ImageMetadataReader/readMetadata file)]
+    (if-let [exif (.getDirectory metadata ExifSubIFDDirectory)]
+      (if-let [date (.getDate exif ExifSubIFDDirectory/TAG_DATETIME_ORIGINAL)]
+        (time-coerce/from-date date)))))
+
+
 (defn analyze [image-id]
   (let [file (io/file (image-path image-id))
         buffered-image (ImageIO/read file)
         width (.getWidth buffered-image)
         height (.getHeight buffered-image)
-        resolutions (get-target-resolutions width (/ width height))]
+        resolutions (get-target-resolutions width (/ width height))
+        time-taken (read-time-taken file)]
     {:width width
      :height height
-     :resolutions resolutions}))
+     :resolutions resolutions
+     :time-taken time-taken}))
 
 
 (defn- scale [image {width :width height :height :as resolution}]
-  (logging/debug "Scaling image" (str (:_id image)) "to" width "x" height)
-  (let [buffered-image (ImageIO/read (io/file (image-path (:_id image))))
+  (let [start (System/currentTimeMillis)
+        buffered-image (ImageIO/read (io/file (image-path (:_id image))))
         operation (ResampleOp. width height)
         scaled-image (.filter operation buffered-image nil)
         output (io/file (image-path (:_id image) resolution))]
     (ImageIO/write scaled-image "jpg" output)
-    (logging/debug "Successfully scaled image"
-                   (str (:_id image))
-                   "to"
-                   width
-                   "x"
-                   height)))
+    (logging/debug "Successfully scaled image" (str (:_id image))
+                   "to" width "x" height "in"
+                   (- (System/currentTimeMillis) start) "ms")))
 
 
 (defn scale-async [image]

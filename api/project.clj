@@ -18,11 +18,14 @@
                  [org.clojure/tools.logging "0.2.6"]
                  [log4j/log4j "1.2.17"]
 
+                 ; image handling
+                 [com.drewnoakes/metadata-extractor "2.6.2"]
+                 [com.mortennobel/java-image-scaling "0.8.5"]
+
                  ; miscealanous
                  [org.clojure/math.numeric-tower "0.0.2"]
                  [clj-time "0.6.0"]
-                 [com.google.guava/guava "15.0"]
-                 [com.mortennobel/java-image-scaling "0.8.5"]]
+                 [com.google.guava/guava "15.0"]]
   :plugins [[lein-ring "0.8.8"]]
   :ring {:handler api.handler/handler}
   :jvm-opts ["-Xmx1g" "-server"]

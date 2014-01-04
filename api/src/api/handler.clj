@@ -7,20 +7,13 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.util.response :as response]
             [clojure.java.io :as io]
+            [clojure.tools.logging :as logging]
             [api.mongo :as mongo]
+            [api.middleware :as middleware]
             [api.config :refer [config]]
             [api.image-handler :as images]
-            [api.request-validation :refer [parse-request check-content-type]])
-  (:import [java.net URL]))
-
-
-(defn- build-entry-url [request id]
-  (URL. (format "%s://%s:%s%s/%s"
-                (name (:scheme request))
-                (:server-name request)
-                (:server-port request)
-                (:uri request)
-                (str id))))
+            [api.util :as util]
+            [api.request-validation :refer [parse-request check-content-type]]))
 
 
 (defresource configuration
@@ -39,7 +32,7 @@
                  id (mongo/add-collection collection)]
              {::id id}))
   :handle-created #(mongo/get-collection (::id %))
-  :location #(build-entry-url (get % :request) (get % ::id)))
+  :location #(util/build-entry-url (get % :request) (get % ::id)))
 
 
 (defresource collection-entries [id]
@@ -67,7 +60,7 @@
                (images/scale-async result)
                {::id id})))
   :handle-created #(mongo/get-image collection-id (::id %))
-  :location #(build-entry-url (get % :request) (get % ::id)))
+  :location #(util/build-entry-url (get % :request) (get % ::id)))
 
 
 (defresource image-entries [collection-id image-id]
@@ -102,17 +95,8 @@
   (route/resources "/"))
 
 
-(defn wrap-cors
-  "Allow requests from all origins"
-  [handler]
-  (fn [request]
-    (let [response (handler request)]
-      (update-in response
-                 [:headers "Access-Control-Allow-Origin"]
-                 (fn [_] "*")))))
-
-
 (def handler
   (-> app
       (wrap-params)
-      (wrap-cors)))
+      (middleware/wrap-cors)
+      (middleware/wrap-logging)))
