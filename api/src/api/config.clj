@@ -1,4 +1,4 @@
-(ns api.util
+(ns api.config
   (:require [clojure.edn :as edn]))
 
 (def config (edn/read-string (slurp "config.edn")))

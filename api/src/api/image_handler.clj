@@ -1,5 +1,5 @@
 (ns api.image-handler
-  (:require [api.util :refer [config]]
+  (:require [api.config :refer [config]]
             [api.concurrency :refer [agent-executor]]
             [clojure.java.io :as io]
             [clojure.math.numeric-tower :as math]

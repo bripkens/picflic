@@ -8,7 +8,7 @@
             [ring.util.response :as response]
             [clojure.java.io :as io]
             [api.mongo :as mongo]
-            [api.util :refer [config]]
+            [api.config :refer [config]]
             [api.image-handler :as images]
             [api.request-validation :refer [parse-request check-content-type]])
   (:import [java.net URL]))
