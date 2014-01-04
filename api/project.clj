@@ -3,6 +3,9 @@
   :url "http://bripkens.de"
   :dependencies [[org.clojure/clojure "1.5.1"]
 
+                 ; Monitoring
+                 [org.clojure/java.jmx "0.2.0"]
+
                  ; web & routing
                  [compojure "1.1.6"]
                  [liberator "0.10.0"]
@@ -28,6 +31,12 @@
                  [com.google.guava/guava "15.0"]]
   :plugins [[lein-ring "0.8.8"]]
   :ring {:handler api.handler/handler}
-  :jvm-opts ["-Xmx1g" "-server"]
+  :jvm-opts ["-Xmx1g"
+             "-server"
+             "-Dcom.sun.management.jmxremote"
+             "-Dcom.sun.management.jmxremote.local.only=false"
+             "-Dcom.sun.management.jmxremote.port=7676"
+             "-Dcom.sun.management.jmxremote.authenticate=false"
+             "-Dcom.sun.management.jmxremote.ssl=false"]
   :profiles {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                                   [ring-mock "0.1.5"]]}})
