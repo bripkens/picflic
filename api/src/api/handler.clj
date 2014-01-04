@@ -80,7 +80,6 @@
   :handle-ok (fn [{image ::entry {media-type :media-type} :representation
                    request :request}]
                (case media-type
-                 ;
                  "image/jpeg"
                    (if-let [width (get-in request [:query-params "width"])]
                      (if-let [resolution (images/get-resolution image (Integer/parseInt width))]

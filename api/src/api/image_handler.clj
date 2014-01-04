@@ -7,21 +7,12 @@
   (:import (javax.imageio ImageIO)
            (com.mortennobel.imagescaling ResampleOp)))
 
-(def
-  ^{:private true}
-  supported-screen-sizes
-  [{:width 2560
-    :height 1440}
-   {:width 1920
-    :height 1080}
-   {:width 1366
-    :height 768}
-   {:width 1280
-    :height 800}
-   {:width 1024
-    :height 768}
-   {:width 290
-    :height 400}])
+
+; Create the image directory if it does not exist
+(let [dir (:image-directory config)
+      file (io/file dir)]
+  (if (not (.exists file))
+    (.mkdirs file)))
 
 
 (defn image-path
@@ -52,7 +43,7 @@
                                       :height target-height}))
           target-resolutions))
     []
-    supported-screen-sizes))
+    (:image-target-resolutions config)))
 
 
 (defn analyze [image-id]
