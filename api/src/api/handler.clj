@@ -21,10 +21,14 @@
   :handle-ok config)
 
 
+(defn- sort-images [collection]
+  (assoc collection :images (sort-by #(:time-taken %) (:images collection))))
+
+
 (defresource collection-list
   :allowed-methods [:post :get]
   :available-media-types ["application/json"]
-  :handle-ok (mongo/get-collections)
+  :handle-ok (fn [_] (map sort-images (mongo/get-collections)))
   :known-content-type? #(check-content-type % ["application/json"])
   :malformed? #(parse-request % "collection_command" ::data)
   :post! (fn [ctx]
@@ -41,7 +45,7 @@
              (let [e (mongo/get-collection id)]
                (if-not (nil? e)
                  {::entry e})))
-  :handle-ok ::entry)
+  :handle-ok #(sort-images (::entry %)))
 
 
 (defresource image-list [collection-id]
@@ -52,13 +56,17 @@
   :post! (fn [{{body :body} :request}]
            (let [id (mongo/get-next-image-id)
                  file (io/file (images/image-path id))]
-             (with-open [out (io/output-stream file)]
-               (io/copy body out))
-             (let [result (mongo/save-image collection-id
-                                            id
-                                            (images/analyze id))]
-               (images/scale-async result)
-               {::id id})))
+             (with-open [out (io/output-stream file)] (io/copy body out))
+             ; TODO handle error cases:
+             ; Image could not be analyzed (e,g. IIOException), or
+             ; it is of wrong type, or
+             ; it is too large
+             (if-let [analyzed (images/analyze id)]
+               (let [result (mongo/save-image collection-id
+                                              id
+                                              analyzed)]
+                 (images/scale-async result)
+                 {::id id}))))
   :handle-created #(mongo/get-image collection-id (::id %))
   :location #(util/build-entry-url (get % :request) (get % ::id)))
 

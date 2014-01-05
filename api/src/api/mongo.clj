@@ -14,7 +14,7 @@
 
 (mg/connect!)
 
-(mg/set-db! (mg/get-db "monger-test"))
+(mg/set-db! (mg/get-db "picflic"))
 
 
 (defn add-collection [collection]

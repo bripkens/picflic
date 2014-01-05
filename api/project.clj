@@ -29,6 +29,7 @@
                  [org.clojure/math.numeric-tower "0.0.2"]
                  [clj-time "0.6.0"]
                  [com.google.guava/guava "15.0"]]
+  :aot [api.ObservableThreadPoolExecutor]
   :plugins [[lein-ring "0.8.8"]]
   :ring {:handler api.handler/handler}
   :jvm-opts ["-Xmx1g"

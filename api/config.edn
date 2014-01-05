@@ -1,5 +1,7 @@
-{:image-directory "/Volumes/fotos_picflic"
- :image-resizing-threads 4
+{:image-directory "/Volumes/fotos_picflic-1"
+ :image-resizing-executor {:core-pool-size 4
+                           :maximum-pool-size 4
+                           :keep-alive-time-seconds 60}
  :image-target-resolutions[{:width 2560
                             :height 1440}
                            {:width 1920

@@ -1,16 +1,17 @@
 (ns api.concurrency
   (:require [api.config :refer [config]]
             [clojure.java.jmx :as jmx])
-  (:import [java.util.concurrent Executors]))
-
-(def queue-stats (ref {}))
-(defn- update-queue-stats! [size] (dosync (ref-set queue-stats {:size size})))
-(update-queue-stats! 0)
-
-(jmx/register-mbean (jmx/create-bean queue-stats)
-                    "api.concurrency:name=queue-stats")
+  (:import [api ObservableThreadPoolExecutor]
+           [java.util.concurrent TimeUnit]))
 
 (def
   ^{:doc "The thread pool which should be used for Clojure's agents"}
-  agent-executor (Executors/newFixedThreadPool
-                      (:image-resizing-threads config)))
+  agent-executor
+  (let [exec-config (:image-resizing-executor config)]
+    (ObservableThreadPoolExecutor.
+      {:core-pool-size (:core-pool-size exec-config)
+       :maximum-pool-size (:maximum-pool-size exec-config)
+       :keep-alive-time (:keep-alive-time-seconds exec-config)
+       :unit TimeUnit/SECONDS
+       :jmx-domain "api.concurrency"
+       :jmx-bean-name "image-scaling-executor"})))

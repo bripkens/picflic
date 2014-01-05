@@ -3,11 +3,7 @@
     :extends java.util.concurrent.ThreadPoolExecutor
     :main false
     :init init
-    :constructors {[int
-                    int
-                    long
-                    java.util.concurrent.TimeUnit
-                    String]
+    :constructors {[java.util.Map]
                    [int
                     int
                     long
@@ -17,10 +13,24 @@
   (:require [clojure.java.jmx :as jmx])
   (:import [java.util.concurrent TimeUnit LinkedBlockingQueue]))
 
-(defn -init [core-pool-size maximum-pool-size keep-alive-time unit bean-name]
+(defn -init [{:keys [core-pool-size
+                     maximum-pool-size
+                     keep-alive-time
+                     unit
+                     jmx-domain
+                     jmx-bean-name]}]
+
+  (assert (>= core-pool-size 0))
+  (assert (> maximum-pool-size 0))
+  (assert (>= maximum-pool-size core-pool-size))
+  (assert (>= keep-alive-time 0))
+  (assert (not (nil? unit)))
+  (assert (not (empty? jmx-domain)))
+  (assert (not (empty? jmx-bean-name)))
+
   (let [state (ref {:queued 0 :running 0 :failed 0 :succeeded 0})]
     (jmx/register-mbean (jmx/create-bean state)
-                        (format "api.concurrency:name=%s" bean-name))
+                        (format "%s:name=%s" jmx-domain jmx-bean-name))
     [[core-pool-size
       maximum-pool-size
       keep-alive-time

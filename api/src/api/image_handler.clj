@@ -5,7 +5,7 @@
             [clojure.math.numeric-tower :as math]
             [clojure.tools.logging :as logging]
             [clj-time.coerce :as time-coerce])
-  (:import (javax.imageio ImageIO)
+  (:import (javax.imageio ImageIO IIOException)
            (com.drew.imaging ImageMetadataReader)
            (com.drew.metadata.exif ExifSubIFDDirectory)
            (com.mortennobel.imagescaling ResampleOp)))
@@ -58,16 +58,20 @@
 
 
 (defn analyze [image-id]
-  (let [file (io/file (image-path image-id))
-        buffered-image (ImageIO/read file)
-        width (.getWidth buffered-image)
-        height (.getHeight buffered-image)
-        resolutions (get-target-resolutions width (/ width height))
-        time-taken (read-time-taken file)]
-    {:width width
-     :height height
-     :resolutions resolutions
-     :time-taken time-taken}))
+  (try
+    (let [file (io/file (image-path image-id))
+          buffered-image (ImageIO/read file)
+          width (.getWidth buffered-image)
+          height (.getHeight buffered-image)
+          resolutions (get-target-resolutions width (/ width height))
+          time-taken (read-time-taken file)]
+      {:width width
+       :height height
+       :resolutions resolutions
+       :time-taken time-taken})
+    (catch IIOException e
+      (logging/warn "Attempt to upload image failed with" e)
+      nil)))
 
 
 (defn- scale [image {width :width height :height :as resolution}]
